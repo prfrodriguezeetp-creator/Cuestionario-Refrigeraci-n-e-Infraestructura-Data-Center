@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Cuestionario: Sistemas de Enfriamiento en Data Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #0b1120 0%, #111827 100%);
+            font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
+            padding: 1rem;
+            color: #eef2ff;
+            min-height: 100vh;
+        }
+
+        .quiz-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: rgba(20, 28, 45, 0.85);
+            backdrop-filter: blur(2px);
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(59, 130, 246, 0.3);
+            padding: 1.5rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #2a3b66;
+            padding-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #b0d4ff, #4f9eff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+        }
+
+        .sub {
+            color: #99a7c9;
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+        }
+
+        .instructions {
+            background: #0f172ed9;
+            padding: 0.8rem 1rem;
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #3b82f6;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .score-bar {
+            background: #030717;
+            border-radius: 2rem;
+            padding: 0.6rem 1rem;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1rem;
+            border: 1px solid #2e4a7a;
+            margin-bottom: 1.5rem;
+        }
+
+        .question-card {
+            background: #11182dd9;
+            border-radius: 1.2rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem 1.2rem;
+            transition: all 0.2s ease;
+            border: 1px solid #2a3860;
+        }
+
+        .question-text {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.8rem;
+            color: #eef3ff;
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .q-num {
+            background: #2a3e6b;
+            border-radius: 30px;
+            padding: 0.2rem 0.7rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .option {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem 0.7rem;
+            border-radius: 1rem;
+            transition: background 0.15s;
+            background: #0b1125;
+            border: 1px solid #2a345b;
+        }
+
+        .option:hover {
+            background: #1a2442;
+            border-color: #5a7dcf;
+        }
+
+        input[type="radio"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 1.1rem;
+            height: 1.1rem;
+            border: 2px solid #6c80b0;
+            border-radius: 50%;
+            margin-top: 0.1rem;
+            cursor: pointer;
+            background: #0f1428;
+            transition: 0.1s;
+            flex-shrink: 0;
+        }
+
+        input[type="radio"]:checked {
+            background-color: #2c7be5;
+            border-color: #2c7be5;
+            box-shadow: inset 0 0 0 3px #0f1428;
+        }
+
+        .option label {
+            flex: 1;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            cursor: pointer;
+            color: #dfe7ff;
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .feedback {
+            margin-top: 0.8rem;
+            padding: 0.6rem 0.8rem;
+            border-radius: 0.8rem;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            background: #0a1122aa;
+            border-left: 4px solid;
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .feedback.correct {
+            border-left-color: #22c55e;
+            background: #0a2a1e40;
+        }
+
+        .feedback.incorrect {
+            border-left-color: #ef4444;
+            background: #2a1a1e40;
+        }
+
+        .feedback-icon {
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .feedback span:last-child {
+            flex: 1;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            border: none;
+            background: #2f3b60;
+            color: white;
+            font-weight: 600;
+            padding: 0.7rem 1.5rem;
+            border-radius: 60px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: #3e4c78;
+            transform: scale(1.02);
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            margin-top: 1.5rem;
+            color: #6e7b9e;
+        }
+
+        /* Ajustes para móviles */
+        @media (max-width: 650px) {
+            body {
+                padding: 0.5rem;
+            }
+            .quiz-container {
+                padding: 1rem;
+                border-radius: 1.5rem;
+            }
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            .question-card {
+                padding: 0.8rem 1rem;
+            }
+            .option {
+                padding: 0.4rem 0.6rem;
+            }
+            .option label {
+                font-size: 0.85rem;
+            }
+            .feedback {
+                font-size: 0.8rem;
+                padding: 0.5rem 0.7rem;
+            }
+            .score-bar {
+                font-size: 0.9rem;
+                padding: 0.5rem;
+            }
+            .btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Para pantallas muy pequeñas (menos de 400px) */
+        @media (max-width: 400px) {
+            .option label {
+                font-size: 0.8rem;
+            }
+            .question-text {
+                font-size: 0.9rem;
+            }
+            .instructions {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="quiz-container">
+    <div class="header">
+        <h1>❄️ Sistemas de Enfriamiento en Data Center</h1>
+        <div class="sub">Cuestionario interactivo · Economizadores de refrigerante · Eficiencia energética</div>
+    </div>
+    <div class="instructions">
+        📘 <strong>Instrucciones:</strong> Selecciona la opción que consideres correcta para cada pregunta. 
+        Al elegir una respuesta, recibirás retroalimentación inmediata (✅ correcta / ❌ incorrecta) y verás la respuesta modelo. 
+        Lleva un conteo de tus aciertos. Al final, puedes reiniciar el cuestionario con el botón de abajo.
+    </div>
+
+    <div class="score-bar" id="scoreDisplay">🎯 Aciertos: 0 / 15</div>
+
+    <div id="quizContainer"></div>
+
+    <div class="button-group">
+        <button id="resetBtn" class="btn">⟳ Reiniciar cuestionario</button>
+    </div>
+
+    <footer>📌 Basado en guías de eficiencia energética en data centers · Respuesta inmediata con validación automática.</footer>
+</div>
+
+<script>
+    // Definición de preguntas
+    const questions = [
+        {
+            text: "¿Cuál es la principal ventaja ambiental de los economizadores de refrigerante?",
+            options: [
+                { value: "a", text: "Reducir la huella de carbono y minimizar el consumo de energía fósil." },
+                { value: "b", text: "Eliminar por completo el uso de compresores." },
+                { value: "c", text: "Introducir aire fresco al centro de datos." },
+                { value: "d", text: "Aumentar la densidad de los servidores." }
+            ],
+            correct: "a",
+            explanation: "La principal ventaja ambiental es reducir la huella de carbono y minimizar el consumo de energía fósil al aprovechar el ambiente exterior como sumidero térmico."
+        },
+        {
+            text: "Menciona dos razones por las que los centros de datos requieren sistemas de refrigeración continuos.",
+            options: [
+                { value: "a", text: "Porque los servidores generan calor extremo y se necesita estabilidad térmica." },
+                { value: "b", text: "Porque los sistemas de aire acondicionado son obligatorios por ley." },
+                { value: "c", text: "Para reducir la humedad ambiente." },
+                { value: "d", text: "Para evitar que los discos duros se desmagnetizen." }
+            ],
+            correct: "a",
+            explanation: "Los servidores generan cantidades masivas de calor y es necesario mantener temperaturas óptimas para la estabilidad y longevidad del hardware."
+        },
+        {
+            text: "Verdadero o falso: Los economizadores de refrigerante introducen aire exterior directamente al edificio.",
+            options: [
+                { value: "a", text: "Verdadero" },
+                { value: "b", text: "Falso" }
+            ],
+            correct: "b",
+            explanation: "Falso. Los economizadores de refrigerante NO introducen aire exterior directamente; mantienen control del ambiente interior."
+        },
+        {
+            text: "¿Qué componente sustituye temporalmente la función del compresor durante la economización?",
+            options: [
+                { value: "a", text: "La bomba de refrigerante." },
+                { value: "b", text: "El ventilador." },
+                { value: "c", text: "El condensador." },
+                { value: "d", text: "El evaporador." }
+            ],
+            correct: "a",
+            explanation: "La bomba de refrigerante reemplaza temporalmente al compresor en modo economizador."
+        },
+        {
+            text: "Según el material, ¿qué proporción de energía consume una bomba de refrigerante en comparación con un compresor?",
+            options: [
+                { value: "a", text: "Menos de una décima parte." },
+                { value: "b", text: "Alrededor de la mitad." },
+                { value: "c", text: "Prácticamente la misma." },
+                { value: "d", text: "El doble." }
+            ],
+            correct: "a",
+            explanation: "La bomba consume menos de una décima parte de la energía que consume un compresor."
+        },
+        {
+            text: "Enumera las tres modalidades de operación del sistema de economización de refrigerante.",
+            options: [
+                { value: "a", text: "Modo Compresor Total; Modo Bomba de Refrigerante Total; Modo Mixto." },
+                { value: "b", text: "Modo Verano; Modo Invierno; Modo Híbrido." },
+                { value: "c", text: "Alta, Media, Baja potencia." },
+                { value: "d", text: "Solo aire, solo líquido, combinado." }
+            ],
+            correct: "a",
+            explanation: "Las tres modalidades son: Modo Compresor Total, Modo Bomba de Refrigerante Total y Modo Mixto."
+        },
+        {
+            text: "En el modo mixto, ¿cómo se combinan los circuitos para gestionar la carga de enfriamiento?",
+            options: [
+                { value: "a", text: "Un circuito opera en modo economizador (bomba) y el otro utiliza el compresor para complementar la carga." },
+                { value: "b", text: "Se alternan cada hora entre compresor y bomba." },
+                { value: "c", text: "Se mezcla aire exterior con refrigerante." },
+                { value: "d", text: "Se utiliza solo el compresor a baja velocidad." }
+            ],
+            correct: "a",
+            explanation: "En modo mixto, un circuito trabaja en modo economizador (bomba) y el otro con compresor, ajustando según la demanda."
+        },
+        {
+            text: "¿Qué ventaja de infraestructura ofrece el uso de refrigerante frente al aire?",
+            options: [
+                { value: "a", text: "Permite tuberías mucho más pequeñas y reduce el espacio requerido." },
+                { value: "b", text: "Es más barato de instalar." },
+                { value: "c", text: "No requiere mantenimiento." },
+                { value: "d", text: "Es más silencioso." }
+            ],
+            correct: "a",
+            explanation: "El refrigerante permite tuberías mucho más pequeñas que los conductos de aire, reduciendo el espacio necesario."
+        },
+        {
+            text: "Completa: El refrigerante puede transportar hasta _____ veces más calor que el aire y _____ veces más que el agua.",
+            options: [
+                { value: "a", text: "40 veces más que el aire y 2 veces más que el agua." },
+                { value: "b", text: "20 veces más que el aire y 1.5 veces más que el agua." },
+                { value: "c", text: "100 veces más que el aire y 5 veces más que el agua." },
+                { value: "d", text: "10 veces más que el aire y 3 veces más que el agua." }
+            ],
+            correct: "a",
+            explanation: "El refrigerante puede transportar hasta 40 veces más calor que el aire y 2 veces más que el agua."
+        },
+        {
+            text: "Diferencia entre una configuración sistema dividido y una unidad empaquetada (menciona un aspecto clave).",
+            options: [
+                { value: "a", text: "Sistema dividido: componentes separados; unidad empaquetada: todo en una sola unidad." },
+                { value: "b", text: "Sistema dividido es más caro; unidad empaquetada es más eficiente." },
+                { value: "c", text: "Sistema dividido usa aire; unidad empaquetada usa agua." },
+                { value: "d", text: "No hay diferencia." }
+            ],
+            correct: "a",
+            explanation: "En sistema dividido los componentes están separados (condensador exterior, bomba, interior); en unidad empaquetada todos se integran en un solo equipo."
+        },
+        {
+            text: "¿Qué factor geográfico influye en la viabilidad de la economización de refrigerante?",
+            options: [
+                { value: "a", text: "El clima de la ubicación (regiones templadas o frías ofrecen mayores ventajas)." },
+                { value: "b", text: "La altitud sobre el nivel del mar." },
+                { value: "c", text: "La cercanía a ríos." },
+                { value: "d", text: "La densidad de población." }
+            ],
+            correct: "a",
+            explanation: "El clima (regiones templadas o frías) determina las horas de economización aprovechable."
+        },
+        {
+            text: "¿Cuál es el rango típico estimado de retorno de inversión (ROI) para la implementación de economizadores de refrigerante?",
+            options: [
+                { value: "a", text: "Entre 2 y 5 años." },
+                { value: "b", text: "Entre 6 meses y 1 año." },
+                { value: "c", text: "Más de 10 años." },
+                { value: "d", text: "Menos de 6 meses." }
+            ],
+            correct: "a",
+            explanation: "El ROI típico se estima entre 2 y 5 años, dependiendo de tarifas eléctricas y condiciones climáticas."
+        },
+        {
+            text: "Menciona tres tareas incluidas en el mantenimiento preventivo de estos sistemas.",
+            options: [
+                { value: "a", text: "Inspecciones de tuberías; verificación de presiones; detección de fugas; mantenimiento de bombas y compresores." },
+                { value: "b", text: "Cambio de aceite; limpieza de filtros; calibración de sensores." },
+                { value: "c", text: "Reemplazo anual del refrigerante; limpieza exterior." },
+                { value: "d", text: "Solo revisión de ventiladores." }
+            ],
+            correct: "a",
+            explanation: "El mantenimiento preventivo incluye inspecciones de tuberías, verificación de presiones, detección de fugas, mantenimiento de bombas y compresores, entre otros."
+        },
+        {
+            text: "¿Por qué los economizadores de refrigerante protegen mejor el ambiente interior que los economizadores de aire?",
+            options: [
+                { value: "a", text: "Porque evitan la entrada de aire exterior contaminado, polvo y humedad, preservando la calidad del aire interior." },
+                { value: "b", text: "Porque utilizan filtros HEPA de alta eficiencia." },
+                { value: "c", text: "Porque trabajan a menor temperatura." },
+                { value: "d", text: "Porque no requieren ventilación." }
+            ],
+            correct: "a",
+            explanation: "Al no introducir aire exterior, evitan contaminantes, polvo y humedad, protegiendo el ambiente interior."
+        },
+        {
+            text: "Indica dos ventajas comparativas resumidas que ofrece la economización de refrigerante según el documento.",
+            options: [
+                { value: "a", text: "Ahorro energético significativo (hasta ~90% durante economización) e infraestructura más compacta con mayor capacidad de transferencia térmica." },
+                { value: "b", text: "Menor costo inicial y mayor confiabilidad." },
+                { value: "c", text: "Eliminación total de compresores y menor ruido." },
+                { value: "d", text: "Mayor compatibilidad con energías renovables." }
+            ],
+            correct: "a",
+            explanation: "Las ventajas destacadas son ahorro energético de hasta ~90% en modo economización y una infraestructura más compacta gracias a la alta capacidad de transferencia térmica del refrigerante."
+        }
+    ];
+
+    let userSelections = new Array(15).fill(null);
+    let correctCount = 0;
+
+    function updateScore() {
+        document.getElementById('scoreDisplay').innerHTML = `🎯 Aciertos: ${correctCount} / 15`;
+    }
+
+    function recalcScore() {
+        let count = 0;
+        for (let i = 0; i < questions.length; i++) {
+            if (userSelections[i] === questions[i].correct) count++;
+        }
+        correctCount = count;
+        updateScore();
+    }
+
+    function showFeedback(index, selectedValue, feedbackDiv) {
+        const q = questions[index];
+        const isCorrect = (selectedValue === q.correct);
+        feedbackDiv.innerHTML = '';
+        feedbackDiv.classList.remove('correct', 'incorrect');
+
+        const iconSpan = document.createElement('span');
+        iconSpan.className = 'feedback-icon';
+        const messageSpan = document.createElement('span');
+        messageSpan.style.flex = '1';
+
+        if (isCorrect) {
+            feedbackDiv.classList.add('correct');
+            iconSpan.textContent = '✅';
+            messageSpan.innerHTML = `<strong>¡Correcto!</strong> ${q.explanation}`;
+        } else {
+            feedbackDiv.classList.add('incorrect');
+            iconSpan.textContent = '❌';
+            const correctOption = q.options.find(opt => opt.value === q.correct);
+            const correctText = correctOption ? correctOption.text : q.correct;
+            messageSpan.innerHTML = `<strong>Incorrecto.</strong> La respuesta correcta es: "${correctText}".<br>${q.explanation}`;
+        }
+        feedbackDiv.appendChild(iconSpan);
+        feedbackDiv.appendChild(messageSpan);
+    }
+
+    function createQuestionCard(index, q) {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.id = `qcard-${index}`;
+
+        const qNumSpan = document.createElement('span');
+        qNumSpan.className = 'q-num';
+        qNumSpan.textContent = `Pregunta ${index+1}`;
+        const questionTextDiv = document.createElement('div');
+        questionTextDiv.className = 'question-text';
+        questionTextDiv.appendChild(qNumSpan);
+        questionTextDiv.appendChild(document.createTextNode(` ${q.text}`));
+        card.appendChild(questionTextDiv);
+
+        const optionsDiv = document.createElement('div');
+        optionsDiv.className = 'options';
+
+        q.options.forEach(opt => {
+            const optionDiv = document.createElement('div');
+            optionDiv.className = 'option';
+
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = `q${index}`;
+            radio.value = opt.value;
+            radio.id = `q${index}_${opt.value}`;
+
+            const label = document.createElement('label');
+            label.htmlFor = radio.id;
+            label.textContent = opt.text;
+
+            optionDiv.appendChild(radio);
+            optionDiv.appendChild(label);
+            optionsDiv.appendChild(optionDiv);
+
+            radio.addEventListener('change', (e) => {
+                userSelections[index] = e.target.value;
+                recalcScore();
+                const feedbackDiv = document.getElementById(`feedback-${index}`);
+                showFeedback(index, e.target.value, feedbackDiv);
+            });
+
+            if (userSelections[index] === opt.value) {
+                radio.checked = true;
+            }
+        });
+
+        card.appendChild(optionsDiv);
+
+        const feedbackDiv = document.createElement('div');
+        feedbackDiv.className = 'feedback';
+        feedbackDiv.id = `feedback-${index}`;
+        card.appendChild(feedbackDiv);
+
+        if (userSelections[index] !== null) {
+            showFeedback(index, userSelections[index], feedbackDiv);
+        }
+
+        return card;
+    }
+
+    function renderQuiz() {
+        const container = document.getElementById('quizContainer');
+        container.innerHTML = '';
+        questions.forEach((q, idx) => {
+            container.appendChild(createQuestionCard(idx, q));
+        });
+    }
+
+    function resetQuiz() {
+        userSelections = new Array(15).fill(null);
+        correctCount = 0;
+        updateScore();
+        renderQuiz();
+    }
+
+    renderQuiz();
+    updateScore();
+
+    document.getElementById('resetBtn').addEventListener('click', resetQuiz);
+</script>
+</body>
+</html>
